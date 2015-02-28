@@ -151,13 +151,16 @@ class AgentWorker extends Thread {
 			System.out.println();
 			System.out.println("Request line: " + inLine);
 			
+			//input "migrate"
 			if(inLine.indexOf("migrate") > -1) {
 				//the supplied request contains migrate, switch the user to a new port
 				
 				//create a new socket with the main server waiting on 1565
+				//get a new one
 				clientSock = new Socket(NewHost, NewHostMainPort);
 				fromHostServer = new BufferedReader(new InputStreamReader(clientSock.getInputStream()));
 				//send a request to port 1565 to receive the next open port
+				//Open a new port and send the State from the old port
 				toHostServer = new PrintStream(clientSock.getOutputStream());
 				toHostServer.println("Please host me. Send my port! [State=" + parentAgentHolder.agentState + "]");
 				toHostServer.flush();
@@ -191,9 +194,10 @@ class AgentWorker extends Thread {
 				//grab the socket at the old port(stored in the parentAgentHolder)
 				ServerSocket ss = parentAgentHolder.sock;
 				//close the port
+				//kill old one
 				ss.close();
 				
-				
+				//input other test, 
 			} else if(inLine.indexOf("person") > -1) {
 				//increment the state int to reflect an event occuring in the 'game'
 				parentAgentHolder.agentState++;
@@ -297,6 +301,7 @@ class AgentListener extends Thread {
 			htmlResponse.append("[Port="+localPort+"]<br/>\n");
 			htmlResponse.append(sendHTMLsubmit());
 			//display it on browser
+			//
 			sendHTMLtoStream(htmlResponse.toString(), out);
 			
 			//now open a connection at the port
@@ -312,6 +317,7 @@ class AgentListener extends Thread {
 				//log a received connection
 				System.out.println("Got a connection to agent at port " + localPort);
 				//connection received. create new agentworker object and start it up!
+				//pass the agentState to new agentState
 				new AgentWorker(sock, localPort, agenthold).start();
 			}
 
